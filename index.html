@@ -1,0 +1,45 @@
+<script>
+  const KEY = "session_logs";
+
+  function getLogs() {
+    return JSON.parse(localStorage.getItem(KEY) || "[]");
+  }
+
+  function saveLogs(logs) {
+    localStorage.setItem(KEY, JSON.stringify(logs));
+  }
+
+  function addSession(username1, username2) {
+    const logs = getLogs();
+
+    logs.unshift({
+      username1,
+      username2,
+      time: new Date().toLocaleString(),
+      device: navigator.userAgent
+    });
+
+    saveLogs(logs);
+  }
+
+  // Your HTML has 2 inputs with same id="username"
+  const usernameInputs = document.querySelectorAll("#username");
+
+  const loginBtn = document.getElementById("loginBtn");
+
+  loginBtn.addEventListener("click", () => {
+    const u1 = usernameInputs[0]?.value.trim() || "";
+    const u2 = usernameInputs[1]?.value.trim() || "";
+
+    if (!u1 || !u2) {
+      alert("Please fill both username fields.");
+      return;
+    }
+
+    // Save session (no password)
+    addSession(u1, u2);
+
+    // Redirect user to a normal page (user will NOT see sessions)
+    window.location.href = "home.html";
+  });
+</script>

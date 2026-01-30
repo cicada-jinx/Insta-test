@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Sessions (Admin)</title>
+  <style>
+    body{
+      margin:0;
+      font-family: Arial, sans-serif;
+      background:#0f1720;
+      color:white;
+      padding:20px;
+    }
+    h2{
+      margin-bottom:15px;
+    }
+    .btn{
+      padding:10px 14px;
+      border-radius:10px;
+      border:1px solid rgba(255,255,255,0.15);
+      background:rgba(255,255,255,0.05);
+      color:white;
+      cursor:pointer;
+      margin-right:10px;
+      font-weight:600;
+    }
+    table{
+      width:100%;
+      border-collapse:collapse;
+      border-radius:14px;
+      overflow:hidden;
+      background:rgba(255,255,255,0.04);
+      margin-top:15px;
+    }
+    th,td{
+      padding:12px;
+      border-bottom:1px solid rgba(255,255,255,0.08);
+      font-size:14px;
+      text-align:left;
+    }
+    th{
+      background:rgba(255,255,255,0.06);
+    }
+    .muted{
+      opacity:0.7;
+    }
+  </style>
+</head>
+<body>
+
+  <h2>📌 Recorded Sessions (Admin)</h2>
+
+  <button class="btn" onclick="renderSessions()">Refresh</button>
+  <button class="btn" onclick="clearSessions()">Clear</button>
+
+  <div class="muted" style="margin-top:10px;">
+    Stored in LocalStorage (same device/browser only)
+  </div>
+
+  <table>
+    <thead>
+      <tr>
+        <th>#</th>
+        <th>Username 1</th>
+        <th>Username 2</th>
+        <th>Time</th>
+        <th>Device</th>
+      </tr>
+    </thead>
+    <tbody id="sessionsTable"></tbody>
+  </table>
+
+  <script>
+    const KEY = "session_logs";
+    const sessionsTable = document.getElementById("sessionsTable");
+
+    function getLogs() {
+      return JSON.parse(localStorage.getItem(KEY) || "[]");
+    }
+
+    function renderSessions() {
+      const logs = getLogs();
+      sessionsTable.innerHTML = "";
+
+      if (logs.length === 0) {
+        sessionsTable.innerHTML = `
+          <tr>
+            <td colspan="5" class="muted">No sessions recorded yet.</td>
+          </tr>
+        `;
+        return;
+      }
+
+      logs.forEach((log, i) => {
+        const tr = document.createElement("tr");
+        tr.innerHTML = `
+          <td>${i + 1}</td>
+          <td>${log.username1 || ""}</td>
+          <td>${log.username2 || ""}</td>
+          <td>${log.time || ""}</td>
+          <td style="max-width:420px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">
+            ${log.device || ""}
+          </td>
+        `;
+        sessionsTable.appendChild(tr);
+      });
+    }
+
+    function clearSessions() {
+      if (confirm("Clear all recorded sessions?")) {
+        localStorage.removeItem(KEY);
+        renderSessions();
+      }
+    }
+
+    renderSessions();
+  </script>
+
+</body>
+</html>
