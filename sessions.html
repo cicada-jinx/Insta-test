@@ -4,72 +4,147 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Admin Sessions</title>
+
+  <!-- Font -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+
   <style>
-    body{
+    *{
       margin:0;
-      font-family: Inter, Arial, sans-serif;
+      padding:0;
+      box-sizing:border-box;
+      font-family:"Inter", sans-serif;
+    }
+
+    body{
       background:#0f1720;
       color:white;
       padding:20px;
+      min-height:100vh;
     }
-    h2{margin-bottom:12px;}
+
+    .wrap{
+      max-width:1100px;
+      margin:0 auto;
+    }
+
+    h2{
+      font-size:22px;
+      margin-bottom:10px;
+      font-weight:600;
+    }
+
+    .muted{
+      opacity:0.7;
+      font-size:14px;
+      margin-bottom:15px;
+    }
+
+    .topbar{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:10px;
+      flex-wrap:wrap;
+      margin-bottom:15px;
+    }
+
+    .btns{
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+    }
+
     .btn{
       padding:10px 14px;
-      border-radius:10px;
+      border-radius:12px;
       border:1px solid rgba(255,255,255,0.15);
       background:rgba(255,255,255,0.05);
       color:white;
       cursor:pointer;
       font-weight:600;
-      margin-right:10px;
+      transition:0.2s;
     }
+
+    .btn:active{
+      transform:scale(0.98);
+      opacity:0.9;
+    }
+
     table{
       width:100%;
       border-collapse:collapse;
-      border-radius:14px;
+      border-radius:16px;
       overflow:hidden;
       background:rgba(255,255,255,0.04);
-      margin-top:15px;
     }
-    th,td{
+
+    th, td{
       padding:12px;
       border-bottom:1px solid rgba(255,255,255,0.08);
       font-size:14px;
       text-align:left;
+      vertical-align:top;
     }
+
     th{
       background:rgba(255,255,255,0.06);
+      font-weight:600;
     }
-    .muted{opacity:0.7;}
+
+    .device{
+      max-width:450px;
+      overflow:hidden;
+      text-overflow:ellipsis;
+      white-space:nowrap;
+    }
+
+    .empty{
+      text-align:center;
+      padding:20px;
+      opacity:0.7;
+    }
   </style>
 </head>
+
 <body>
+  <div class="wrap">
 
-  <h2>📌 Recorded Sessions (Admin Only)</h2>
+    <div class="topbar">
+      <div>
+        <h2>📌 Recorded Sessions (Admin Only)</h2>
+        <div class="muted">Saved in LocalStorage (same browser/device)</div>
+      </div>
 
-  <button class="btn" onclick="renderSessions()">Refresh</button>
-  <button class="btn" onclick="clearSessions()">Clear</button>
+      <div class="btns">
+        <button class="btn" id="refreshBtn">Refresh</button>
+        <button class="btn" id="clearBtn">Clear</button>
+      </div>
+    </div>
 
-  <div class="muted" style="margin-top:10px;">
-    Stored in LocalStorage (same browser only)
+    <table>
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>Username 1</th>
+          <th>Username 2</th>
+          <th>Time</th>
+          <th>Device</th>
+        </tr>
+      </thead>
+      <tbody id="sessionsTable"></tbody>
+    </table>
+
   </div>
-
-  <table>
-    <thead>
-      <tr>
-        <th>#</th>
-        <th>Username 1</th>
-        <th>Username 2</th>
-        <th>Time</th>
-        <th>Device</th>
-      </tr>
-    </thead>
-    <tbody id="sessionsTable"></tbody>
-  </table>
 
   <script>
     const KEY = "session_logs";
     const sessionsTable = document.getElementById("sessionsTable");
+
+    const refreshBtn = document.getElementById("refreshBtn");
+    const clearBtn = document.getElementById("clearBtn");
 
     function getLogs() {
       return JSON.parse(localStorage.getItem(KEY) || "[]");
@@ -79,10 +154,10 @@
       const logs = getLogs();
       sessionsTable.innerHTML = "";
 
-      if (logs.length === 0) {
+      if (!logs.length) {
         sessionsTable.innerHTML = `
           <tr>
-            <td colspan="5" class="muted">No sessions recorded yet.</td>
+            <td colspan="5" class="empty">No sessions recorded yet.</td>
           </tr>
         `;
         return;
@@ -95,9 +170,7 @@
           <td>${log.username1 || ""}</td>
           <td>${log.username2 || ""}</td>
           <td>${log.time || ""}</td>
-          <td style="max-width:420px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">
-            ${log.device || ""}
-          </td>
+          <td class="device">${log.device || ""}</td>
         `;
         sessionsTable.appendChild(tr);
       });
@@ -110,8 +183,11 @@
       }
     }
 
+    refreshBtn.addEventListener("click", renderSessions);
+    clearBtn.addEventListener("click", clearSessions);
+
+    // Load on open
     renderSessions();
   </script>
-
 </body>
 </html>
